@@ -2,7 +2,7 @@
 
 STAKE_PER_DAY=100
 BET_PER_GAME=1
-simulateOneGame(){
+SimulateOneGame(){
 	WIN=1
 	LOSE=0
 
@@ -14,5 +14,22 @@ simulateOneGame(){
 		ResultAmount=-$BET_PER_GAME
 	fi
 }
-simulateOneGame
 echo $ResultAmount
+CurrentAmount=$STAKE_PER_DAY
+SimulateOneDayTillResignHelper(){
+	read User_Percentage
+                  Percentage=$(($User_Percentage * $STAKE_PER_DAY/100))
+                    UpperLimit=$(($Percentage+$STAKE_PER_DAY))
+                         lowerLimit=$(($Percentage-$STAKE_PER_DAY))
+	while [ $CurrentAmount -gt $lowerLimit -a $CurrentAmount -lt $UpperLimit ]
+	do
+		SimulateOneGame
+		CurrentAmount=$(($CurrentAmount+$ResultAmount))
+	done
+}
+SimulateOneDayTillResign(){
+	SimulateOneDayTillResignHelper
+	echo "Resign for the day"
+	echo $CurrentAmount
+}
+SimulateOneDayTillResign
