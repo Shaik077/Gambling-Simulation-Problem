@@ -69,18 +69,33 @@ SimulateGameForTwentyDays(){
 SimulateGameForTwentyDays
 
 PerDayOutcome(){
-	arr=()
+	Month=()
         totalAmount=0
 	for (( Day=1; Day<=$Number_Of_Days; Day++ ))
 	do
 		CurrentAmount=$STAKE_PER_DAY
                  SimulateOneDayTillResignHelper
-		arr[((totalAmount++))]=$CurrentAmount
+		Month[((totalAmount++))]=$CurrentAmount
 	done
 	for (( Day=1; Day<$Number_Of_Days; Day++ ))
 	do
-		echo "Day $(($Day+1)) : ${arr[$Day]}"
+		echo "Day $(($Day+1)) : ${Month[$Day]}"
 	done
 
 }
 PerDayOutcome
+luckiestDay=$( printf "%s\n" ${Month[@]} | sort -nr | head -1 )
+   unluckiestDay=$( printf "%s\n" ${Month[@]} | sort -nr | tail -1 )
+
+for data in "${!Month[@]}"
+   do
+      if [[ ${Month[$data]} -eq $luckiestDay ]]
+      then
+         echo "LUCKIEST DAY- $data $luckiestDay"
+       fi
+
+      if [[ ${Month[$data]} -eq $unluckiestDay ]]
+      then
+         echo "UNLUCKIEST DAY- $data $unluckiestDay"
+      fi
+   done
