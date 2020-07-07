@@ -2,6 +2,10 @@
 
 STAKE_PER_DAY=100
 BET_PER_GAME=1
+echo "User_Percentage"
+read User_Percentage
+echo "Number_Of_Days" 
+read Number_Of_Days
 SimulateOneGame(){
 	WIN=1
 	LOSE=0
@@ -14,10 +18,8 @@ SimulateOneGame(){
 		ResultAmount=-$BET_PER_GAME
 	fi
 }
-echo $ResultAmount
 CurrentAmount=$STAKE_PER_DAY
 SimulateOneDayTillResignHelper(){
-	read User_Percentage
                   Percentage=$(($User_Percentage * $STAKE_PER_DAY/100))
                     UpperLimit=$(($Percentage+$STAKE_PER_DAY))
                          lowerLimit=$(($Percentage-$STAKE_PER_DAY))
@@ -36,7 +38,7 @@ SimulateOneDayTillResign
 TotalWin=0
 TotalLose=0
 SimulateGameForTwentyDaysHelper(){
-	for (( i=0; i<20; i++ ))
+	for (( Day=1; Day<$Number_Of_Days; Day++ ))
 	do
 		CurrentAmount=$STAKE_PER_DAY
 		SimulateOneDayTillResignHelper
@@ -52,8 +54,8 @@ SimulateGameForTwentyDaysHelper(){
 }
 SimulateGameForTwentyDays(){
 	SimulateGameForTwentyDaysHelper
-	echo $TotalWin
-	echo $TotalLose
+	echo "TotalWin" = $TotalWin
+	echo "TotalLose"= $TotalLose
 	if [ $TotalWin -gt $TotalLose ]
 	then
 		WinBy=$(($TotalWin-$TotalLose))
@@ -62,5 +64,6 @@ SimulateGameForTwentyDays(){
 		LostBy=$(($TotalLose-$TotalWin))
 		echo "Total Amount lost : $LostBy"
 	fi
+
 }
 SimulateGameForTwentyDays
