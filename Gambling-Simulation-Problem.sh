@@ -6,6 +6,7 @@ echo "User_Percentage"
 read User_Percentage
 echo "Number_Of_Days" 
 read Number_Of_Days
+
 SimulateOneGame(){
 	WIN=1
 	LOSE=0
@@ -18,23 +19,29 @@ SimulateOneGame(){
 		ResultAmount=-$BET_PER_GAME
 	fi
 }
+
 CurrentAmount=$STAKE_PER_DAY
 SimulateOneDayTillResignHelper(){
                   Percentage=$(($User_Percentage * $STAKE_PER_DAY/100))
-                    UpperLimit=$(($Percentage+$STAKE_PER_DAY))
-                         lowerLimit=$(($Percentage-$STAKE_PER_DAY))
+                  UpperLimit=$(($Percentage+$STAKE_PER_DAY))
+                  lowerLimit=$(($STAKE_PER_DAY-$Percentage))
+
 	while [ $CurrentAmount -gt $lowerLimit -a $CurrentAmount -lt $UpperLimit ]
 	do
 		SimulateOneGame
 		CurrentAmount=$(($CurrentAmount+$ResultAmount))
 	done
 }
+
+
 SimulateOneDayTillResign(){
 	SimulateOneDayTillResignHelper
 	echo "Resign for the day"
 	echo $CurrentAmount
 }
 SimulateOneDayTillResign
+
+
 TotalWin=0
 TotalLose=0
 SimulateGameForTwentyDaysHelper(){
@@ -52,6 +59,8 @@ SimulateGameForTwentyDaysHelper(){
 		fi
 	done
 }
+
+
 SimulateGameForTwentyDays(){
 	SimulateGameForTwentyDaysHelper
 	echo "TotalWin" = $TotalWin
@@ -84,18 +93,27 @@ PerDayOutcome(){
 
 }
 PerDayOutcome
+
 luckiestDay=$( printf "%s\n" ${Month[@]} | sort -nr | head -1 )
-   unluckiestDay=$( printf "%s\n" ${Month[@]} | sort -nr | tail -1 )
+unluckiestDay=$( printf "%s\n" ${Month[@]} | sort -nr | tail -1 )
 
 for data in "${!Month[@]}"
    do
       if [[ ${Month[$data]} -eq $luckiestDay ]]
       then
-         echo "LUCKIEST DAY- $data $luckiestDay"
+         echo "Luckiest Day- $data $luckiestDay"
        fi
 
       if [[ ${Month[$data]} -eq $unluckiestDay ]]
       then
-         echo "UNLUCKIEST DAY- $data $unluckiestDay"
+         echo "Unluckiest Day- $data $unluckiestDay"
       fi
    done
+
+
+if [[ $TotalWin -gt $TotalLose ]]
+then
+       echo "ContinuePlaying..."
+else
+     echo "StopPlaying..."
+fi
