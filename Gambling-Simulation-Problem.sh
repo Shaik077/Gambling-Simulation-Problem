@@ -1,12 +1,10 @@
-#! /bin/bash -x
-
-STAKE_PER_DAY=100
-BET_PER_GAME=1
+STAKEPERDAY=100
+BETPERGAME=1
 echo "User_Percentage"
 read User_Percentage
 echo "Number_Of_Days" 
 read Number_Of_Days
-
+declare -A Month
 SimulateOneGame(){
 	WIN=1
 	LOSE=0
@@ -14,53 +12,49 @@ SimulateOneGame(){
 	Check=$((RANDOM%2))
 	if [ $Check -eq $WIN ];
 	then
-		ResultAmount=$BET_PER_GAME
+		ResultAmount=$BETPERGAME
 	else
-		ResultAmount=-$BET_PER_GAME
+		ResultAmount=-$BETPERGAME
 	fi
 }
-
-CurrentAmount=$STAKE_PER_DAY
+CurrentAmount=$STAKEPERDAY
 SimulateOneDayTillResignHelper(){
-                  Percentage=$(($User_Percentage * $STAKE_PER_DAY/100))
-                  UpperLimit=$(($Percentage+$STAKE_PER_DAY))
-                  lowerLimit=$(($STAKE_PER_DAY-$Percentage))
-
+                  Percentage=$(($User_Percentage * $STAKEPERDAY/100))
+                  UpperLimit=$(($Percentage+$STAKEPERDAY))
+                  lowerLimit=$(($STAKEPERDAY-$Percentage))
 	while [ $CurrentAmount -gt $lowerLimit -a $CurrentAmount -lt $UpperLimit ]
 	do
 		SimulateOneGame
 		CurrentAmount=$(($CurrentAmount+$ResultAmount))
 	done
 }
-
-
 SimulateOneDayTillResign(){
 	SimulateOneDayTillResignHelper
 	echo "Resign for the day"
 	echo $CurrentAmount
 }
 SimulateOneDayTillResign
-
-
 TotalWin=0
 TotalLose=0
 SimulateGameForTwentyDaysHelper(){
 	for (( Day=1; Day<$Number_Of_Days; Day++ ))
 	do
-		CurrentAmount=$STAKE_PER_DAY
+		CurrentAmount=$STAKEPERDAY
 		SimulateOneDayTillResignHelper
-		if [ $CurrentAmount -gt $STAKE_PER_DAY ]
+		if [ $CurrentAmount -gt $STAKEPERDAY ]
 		then
-			WinAmountPerDay=$(($CurrentAmount - $STAKE_PER_DAY))
+			WinAmountPerDay=$(($CurrentAmount - $STAKEPERDAY))
 			TotalWin=$(($TotalWin + $WinAmountPerDay))
+                        Month["$Day"]=$TotalWin
 		else
-			LoseAmountPerDay=$(($STAKE_PER_DAY-$CurrentAmount))
+			LoseAmountPerDay=$(($STAKEPERDAY-$CurrentAmount))
 			TotalLose=$(($TotalLose + $LoseAmountPerDay))
+                        Month["$Day"]=$TotalLose
 		fi
+                  
 	done
+ echo ${Month[@]}
 }
-
-
 SimulateGameForTwentyDays(){
 	SimulateGameForTwentyDaysHelper
 	echo "TotalWin" = $TotalWin
@@ -76,24 +70,6 @@ SimulateGameForTwentyDays(){
 
 }
 SimulateGameForTwentyDays
-
-PerDayOutcome(){
-	Month=()
-        totalAmount=0
-	for (( Day=1; Day<=$Number_Of_Days; Day++ ))
-	do
-		CurrentAmount=$STAKE_PER_DAY
-                 SimulateOneDayTillResignHelper
-		Month[((totalAmount++))]=$CurrentAmount
-	done
-	for (( Day=1; Day<$Number_Of_Days; Day++ ))
-	do
-		echo "Day $(($Day+1)) : ${Month[$Day]}"
-	done
-
-}
-PerDayOutcome
-
 luckiestDay=$( printf "%s\n" ${Month[@]} | sort -nr | head -1 )
 unluckiestDay=$( printf "%s\n" ${Month[@]} | sort -nr | tail -1 )
 
@@ -109,6 +85,7 @@ for data in "${!Month[@]}"
          echo "Unluckiest Day- $data $unluckiestDay"
       fi
    done
+
 
 
 if [[ $TotalWin -gt $TotalLose ]]
